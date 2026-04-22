@@ -3,6 +3,7 @@ package otus.homework.coroutines
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.viewModels
 import otus.homework.reactivecats.CatsViewModel
 import java.net.SocketTimeoutException
 import kotlin.toString
@@ -13,7 +14,9 @@ class MainActivity : AppCompatActivity() {
 
     private val diContainer = DiContainer()
 
-    private val viewModel = CatsViewModel(diContainer.service)
+    private val viewModel: CatsViewModel by viewModels {
+        CatsViewModelsFactory(diContainer.service)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.state.observe(this) { result ->
             when (result) {
                 is CatsViewModel.CatsResult.Success -> {
-                    view.populate(result.catModels)
+                    view.populate(result.data)
                 }
 
                 is CatsViewModel.CatsResult.Errors -> {

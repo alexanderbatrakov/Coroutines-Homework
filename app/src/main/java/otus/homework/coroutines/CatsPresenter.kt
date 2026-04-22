@@ -5,9 +5,9 @@ import android.widget.Toast
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
 
@@ -18,9 +18,10 @@ class CatsPresenter(
 
     private var _catsView: ICatsView? = null
     private val presenterScope = CoroutineScope(Dispatchers.Main + SupervisorJob() + CoroutineName("CatsCoroutine"))
+    private var job: Job? = null
 
     fun onInitComplete() {
-        presenterScope.launch {
+        job =   presenterScope.launch {
             try {
                 val getCatFactDiffered = async { catsService.getCatFact() }
                 val getCatImageDiffered = async { catsService.getCatImage() }
@@ -59,6 +60,6 @@ class CatsPresenter(
     }
 
     fun onStop() {
-        presenterScope.cancel()
+        job?.cancel()
     }
 }

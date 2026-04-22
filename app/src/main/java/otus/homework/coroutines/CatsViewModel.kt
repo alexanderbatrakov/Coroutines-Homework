@@ -15,8 +15,8 @@ class CatsViewModel(
     private val catsService: CatsService,
 ) : ViewModel() {
 
-    private val _state = MutableLiveData<CatsResult>()
-    val state: LiveData<CatsResult> = _state
+    private val _state = MutableLiveData<CatsResult<CatModels>>()
+    val state: LiveData<CatsResult<CatModels>> = _state
 
     private val errorsHandler = CoroutineExceptionHandler { _, throwable ->
         CrashMonitor.trackWarning()
@@ -45,8 +45,8 @@ class CatsViewModel(
         }
     }
 
-    sealed class CatsResult {
-        data class Success(val catModels: CatModels) : CatsResult()
-        data class Errors(val e: Throwable) : CatsResult()
+    sealed class CatsResult<out T> {
+        data class Success <T> (val data: T) : CatsResult<T>()
+        data class Errors(val e: Throwable) : CatsResult<Nothing>()
     }
 }
